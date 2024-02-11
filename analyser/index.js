@@ -13,6 +13,19 @@ fileInput.onchange = e => {
     ctx.drawImage(
       img, 0, 0, img.width, img.height
     )
+
+    preview.width = img.width
+    preview.height = img.height
+    preview.getContext('2d').drawImage(
+      img, 0, 0, img.width, img.height
+    )
+
+    original.width = img.width
+    original.height = img.height
+    original.getContext('2d').drawImage(
+      img, 0, 0, img.width, img.height
+    )
+
     requestAnimationFrame(
       () => new Promise((res) => {
         analyse()
@@ -28,22 +41,36 @@ async function analyse() {
   const data = imageData.data
 
   const colors = []
+  let lMax = 0
 
   for (let i = 0; i < data.length / 4; i++) {
     const r = data[i*4]
     const g = data[i*4+1]
     const b = data[i*4+2]
     const o = data[i*4+3]
+    const t = new Color({r, g, b})
 
-    colors.push(new Color({r, g, b}))
+    colors.push(t)
+    lMax = Math.max(lMax, t.l)
   }
 
+  for (let i = 0; i < data.length / 4; i++) {
+    const t = colors[i]
+    const mult = 0.33 / lMax
+    data[i*4] = Math.floor(t.r * mult)
+    data[i*4+1] = Math.floor(t.g * mult)
+    data[i*4+2] = Math.floor(t.b * mult)
+  }
+  console.log(imageData)
+  ctx.putImageData(imageData, 0, 0)
+
+
+  /*
   const clusters = splitToClusters(colors)
   const clustersSorted = clusters.sort(
       (a, b) => b.weight - a.weight
     )
   const colorsDiv = document.getElementById('colors')
-  console.log(clustersSorted)
   clustersSorted.forEach(cluster => {
     const color = document.createElement('div')
     color.className = 'color'
@@ -51,6 +78,7 @@ async function analyse() {
     color.style.background = cluster.color.getStyle()
     colorsDiv.append(color)
   })
+  */
 }
 
 const MAX_DIST = 10000
