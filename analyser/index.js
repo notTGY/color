@@ -61,24 +61,27 @@ async function analyse() {
     data[i*4+1] = Math.floor(t.g * mult)
     data[i*4+2] = Math.floor(t.b * mult)
   }
-  console.log(imageData)
   ctx.putImageData(imageData, 0, 0)
 
 
-  /*
   const clusters = splitToClusters(colors)
   const clustersSorted = clusters.sort(
       (a, b) => b.weight - a.weight
     )
   const colorsDiv = document.getElementById('colors')
   clustersSorted.forEach(cluster => {
+    const container = document.createElement('div')
+    container.className = 'color-container'
+    const label = document.createElement('div')
+    label.innerText = cluster.color.getStyle()
     const color = document.createElement('div')
     color.className = 'color'
-
     color.style.background = cluster.color.getStyle()
-    colorsDiv.append(color)
+    container.append(color)
+    container.append(label)
+
+    colorsDiv.append(container)
   })
-  */
 }
 
 const MAX_DIST = 10000
